@@ -101,19 +101,41 @@ public class ToDoListGUI {
     }
 
     private void markTaskCompleted() {
+        int selectedIndex = taskList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            tasks.get(selectedIndex).setCompleted(true);
+            updateTaskList(tasks);
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a task to mark as completed.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 
     private void removeTask() {
+        int selectedIndex = taskList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            tasks.remove(selectedIndex);
+            updateTaskList(tasks);
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a task to remove.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 
     private void filterTasks(boolean showCompleted) {
-
+          ArrayList<Task> filteredTasks = tasks.stream()
+                .filter(task -> task.isCompleted() == showCompleted)
+                .collect(Collectors.toCollection(ArrayList::new));
+        updateTaskList(filteredTasks);
     }
 
     private void updateTaskList(ArrayList<Task> taskListToDisplay) {
-
+        taskListModel.clear();
+        for (int i = 0; i < taskListToDisplay.size(); i++) {
+            Task task = taskListToDisplay.get(i);
+            String status = task.isCompleted() ? "[✔]" : "[ ]";
+            taskListModel.addElement((i + 1) + ". " + status + " " + task.getDescription());
+        }
     }
 
     public static void main(String[] args) {
@@ -130,6 +152,13 @@ public class ToDoListGUI {
             this.completed = false;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
 
         public void setCompleted(boolean completed) {
             this.completed = completed;
